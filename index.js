@@ -23,11 +23,16 @@ const run = async () => {
     //   console.log(batch)
     // },
     eachMessage: async ({ topic, partition, message }) => {
-      const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`
-      console.log(`- ${prefix} ${message.key}#${message.value}`)
+      // const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`
+      // console.log(`- ${prefix} ${message.key}#${message.value}`)
 
-      publisher.publish('features/1234', message.value)
-      console.log('Mensagem enviada para mqtt')
+      const { body, properties } = JSON.parse(message.value)
+
+      // console.log('BODY:', body)
+      // console.log('PROPERTIES:', properties)
+
+      publisher.publish(properties.topic, body)
+      // console.log('Mensagem enviada para mqtt')
     },
   })
 }
