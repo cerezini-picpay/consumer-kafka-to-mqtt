@@ -1,44 +1,36 @@
 const { Kafka } = require('kafkajs')
 const MQTT = require('mqtt')
+const dotenv = require('dotenv')
 
-// const host = 'localhost'
-// const host = process.env.HOST_IP || ip.address()
+dotenv.config()
 
 const kafka = new Kafka({
-  // logLevel: logLevel.INFO,
   clientId: 'kafka-consumer',
-  brokers: ['localhost:29092'],
+  brokers: [process.env.PICPAY_FLAGS_KAFKA_URI],
 })
 
 const topic = 'features'
 const consumer = kafka.consumer({ groupId: 'flags' })
 
-const publisher = MQTT.connect('tcp://localhost:1883')
+const publisher = MQTT.connect(process.env.PICPAY_FLAGS_MQTT_URI)
+
+let qty = 1
 
 const run = async () => {    
-    await consumer.connect()
-    await consumer.subscribe({ topic, fromBeginning: true })
-    await consumer.run({
-    // eachBatch: async ({ batch }) => {
-    //   console.log(batch)
-    // },
+  await consumer.connect()
+  await consumer.subscribe({ topic, fromBeginning: true })
+  await consumer.run({
+
     eachMessage: async ({ topic, partition, message }) => {
-      // const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`
-      // console.log(`- ${prefix} ${message.key}#${message.value}`)
-
       const { body, properties } = JSON.parse(message.value)
-
-      // console.log('BODY:', body)
-      // console.log('PROPERTIES:', properties)
-
-      publisher.publish(properties.topic, body)
-      // console.log('Mensagem enviada para mqtt')
+      publisher.publish(properties.topic, body, { qos: 1 })
+      console.log(`${qty} : `, new Date)
+      qty++
     },
   })
 }
 
 publisher.on('connect', run)
-//run().catch(e => console.error(`[example/consumer] ${e.message}`, e))
 
 const errorTypes = ['unhandledRejection', 'uncaughtException']
 const signalTraps = ['SIGTERM', 'SIGINT', 'SIGUSR2']
