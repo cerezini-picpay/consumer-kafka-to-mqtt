@@ -1,0 +1,16 @@
+version: '3.4'
+services:
+  consumer-kafka-node:
+    container_name: consumer-kafka-node.flags
+    build:
+        context: .
+        dockerfile: Dockerfile
+    volumes:
+        - .:/app
+    networks:
+      - bubble
+
+networks:
+  bubble:
+    external: true
+
