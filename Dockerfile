@@ -2,10 +2,9 @@ FROM node:lts-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY . ./
+
 RUN npm ci
 # RUN npm ci --only=production
 
-COPY . .
-
-CMD [ "node", "index.js" ]
+CMD [ "npm", "start" ]
