@@ -1,6 +1,10 @@
 const mqtt = require('mqtt')
+const dotenv = require('dotenv')
+
+dotenv.config()
+
 const client  = mqtt.connect(
-    'tcp://localhost:1883', 
+    process.env.PICPAY_FLAGS_MQTT_URI, 
     {
         clientId: 'mqtt-consumer', 
         clean: false

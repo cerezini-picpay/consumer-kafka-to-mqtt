@@ -14,9 +14,9 @@ const consumer = kafka.consumer({ groupId: 'flags' })
 
 const publisher = MQTT.connect(process.env.PICPAY_FLAGS_MQTT_URI)
 
-// let qty = 1
+let qty = 1
 
-const run = async () => {    
+const run = async () => {
   await consumer.connect()
   await consumer.subscribe({ topic, fromBeginning: true })
   await consumer.run({
@@ -24,8 +24,8 @@ const run = async () => {
     eachMessage: async ({ topic, partition, message }) => {
       const { body, properties } = JSON.parse(message.value)
       publisher.publish(properties.topic, body, { qos: 1, retain: true })
-      // console.log(`${qty} : `, new Date)
-      // qty++
+      console.log(`${qty} : `, new Date)
+      qty++
     },
   })
 }
