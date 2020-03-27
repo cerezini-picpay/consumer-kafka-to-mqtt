@@ -14,7 +14,7 @@ const client  = mqtt.connect(
 let qty = 1
 
 client.on('connect', () => {
-    client.subscribe('features/1234', { qos: 1 }, (err) => {
+    client.subscribe('features', { qos: 1 }, (err) => {
         if (!err) {
             console.log('Conectado')
         }
