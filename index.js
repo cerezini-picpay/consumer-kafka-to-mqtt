@@ -9,7 +9,7 @@ const kafka = new Kafka({
   brokers: [process.env.PICPAY_FLAGS_KAFKA_URI]
 })
 
-const consumer = kafka.consumer({ groupId: 'flags' })
+const consumer = kafka.consumer({ groupId: process.env.PICPAY_FLAGS_KAFKA_GROUP_ID })
 
 const publisher = MQTT.connect(process.env.PICPAY_FLAGS_MQTT_URI)
 
@@ -17,7 +17,12 @@ let qty = 1
 
 const run = async () => {
   await consumer.connect()
-  await consumer.subscribe({ topic: 'features', fromBeginning: true })
+
+  await consumer.subscribe({
+    topic: process.env.PICPAY_FLAGS_KAFKA_QUEUE_FEATURE_UPDATE,
+    fromBeginning: true
+  })
+
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
       const { body, properties } = JSON.parse(message.value)
